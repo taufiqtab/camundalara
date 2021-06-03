@@ -30,3 +30,7 @@ the main goal of this project is
 --- instance_id (varchar)\
 --- status (varchar)\
 --- created_at | updated_at (timestamp)
+
+
+#### BPMN :
+[![image.png](https://i.postimg.cc/ZY91fGd8/image.png)](https://postimg.cc/qgTbqZQq)
