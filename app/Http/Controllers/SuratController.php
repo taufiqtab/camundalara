@@ -35,7 +35,7 @@ class SuratController extends Controller
         $camunda = new \App\Http\Controllers\Camucont();
         $task = $camunda->getTaskBy('instance', $surat->instance_id);
         if(!empty($task)){
-            $variables = '{"variables":{ "jenisSurat" : {"value" : "masuk"} } }';
+            $variables = '{"variables":{ "jenisSurat" : {"value" : "masuk"},"alasan" : {"value" : "dimasukan"} } }';
             $camunda->completeTask($task[0]->id, $variables);
             $surat->jenis = "masuk";
             $surat->status ="wip";
@@ -49,7 +49,7 @@ class SuratController extends Controller
         $camunda = new \App\Http\Controllers\Camucont();
         $task = $camunda->getTaskBy('instance', $surat->instance_id);
         if(!empty($task)){
-            $variables = '{"variables":{ "jenisSurat" : {"value" : "keluar"} } }';
+            $variables = '{"variables":{ "jenisSurat" : {"value" : "keluar"}, "alasan" : {"value" : "dikeluarkan"} } }';
             $camunda->completeTask($task[0]->id, $variables);
             $surat->jenis = "keluar";
             $surat->status ="wip";
