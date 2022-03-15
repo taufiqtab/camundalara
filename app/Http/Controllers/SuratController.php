@@ -15,11 +15,10 @@ class SuratController extends Controller
         $camunda = new \App\Http\Controllers\Camucont();
         $instance = $camunda->startProcessByKey('penyuratan');
         if(!empty($instance)){
-            $instance_id = $instance['id'];
             $surat = new \App\Models\Surat();
-            $surat->jenis = "";
-            $surat->status ="open";
             $surat->instance_id = $instance['id'];
+            $surat->status ="open";
+            $surat->jenis = "";
             if($surat->save()){
                 return redirect('/surat');
             }else{
@@ -33,10 +32,10 @@ class SuratController extends Controller
     public function updateMasuk($idx){
         $surat = \App\Models\Surat::where('id', $idx)->first();
         $camunda = new \App\Http\Controllers\Camucont();
-        $task = $camunda->getTaskBy('instance', $surat->instance_id);
+        $task = $camunda->getTaskId($surat->instance_id);
         if(!empty($task)){
             $variables = '{"variables":{ "jenisSurat" : {"value" : "masuk"},"alasan" : {"value" : "dimasukan"} } }';
-            $camunda->completeTask($task[0]->id, $variables);
+            $camunda->completeTask($task, $variables);
             $surat->jenis = "masuk";
             $surat->status ="wip";
             $surat->save();
@@ -47,10 +46,10 @@ class SuratController extends Controller
     public function updateKeluar($idx){
         $surat = \App\Models\Surat::where('id', $idx)->first();
         $camunda = new \App\Http\Controllers\Camucont();
-        $task = $camunda->getTaskBy('instance', $surat->instance_id);
+        $task = $camunda->getTaskId($surat->instance_id);
         if(!empty($task)){
             $variables = '{"variables":{ "jenisSurat" : {"value" : "keluar"}, "alasan" : {"value" : "dikeluarkan"} } }';
-            $camunda->completeTask($task[0]->id, $variables);
+            $camunda->completeTask($task, $variables);
             $surat->jenis = "keluar";
             $surat->status ="wip";
             $surat->save();
@@ -61,10 +60,10 @@ class SuratController extends Controller
     public function selesai($idx){
         $surat = \App\Models\Surat::where('id', $idx)->first();
         $camunda = new \App\Http\Controllers\Camucont();
-        $task = $camunda->getTaskBy('instance', $surat->instance_id);
+        $task = $camunda->getTaskId($surat->instance_id);
         if(!empty($task)){
             // $variables = '{"variables":{ "jenisSurat" : {"value" : "keluar"} } }';
-            $camunda->completeTask($task[0]->id, "");
+            $camunda->completeTask($task);
             $surat->status ="closed";
             $surat->save();
             return redirect('/surat');

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Http;
 class Camucont extends Controller
 {
     var $base_url = "http://localhost:8080/engine-rest/";
+
     public function index(){
         echo "Camunda Controller";
         // $this->getAllProcess();
@@ -59,10 +60,13 @@ class Camucont extends Controller
         }
     }
 
-    public function startProcessByKey($val){
+    //ESSENTIAL FUNCTION 
+
+    public function startProcessByKey($val, $variables = ""){
         $client = new \GuzzleHttp\Client();
         $res = $client->request('POST', "{$this->base_url}process-definition/key/$val/start", [
             'headers' => ['Content-Type' => 'application/json'],
+            'body' => $variables
         ]);
         
         $responseJson = $res->getBody()->getContents();
@@ -71,7 +75,17 @@ class Camucont extends Controller
         return $responseData;
     }
 
-    public function completeTask($taskId, $variables){
+    public function getTaskId($instanceID){
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json',
+        ])->get(
+            "{$this->base_url}task/?processInstanceId=$instanceID"
+        );
+        $res = json_decode($response->body());
+        return $res[0]->id;
+    }
+
+    public function completeTask($taskId, $variables = ""){
         $client = new \GuzzleHttp\Client();
         $res = $client->request('POST', "{$this->base_url}task/$taskId/complete", [
             'headers' => ['Content-Type' => 'application/json'],
